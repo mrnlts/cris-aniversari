@@ -2,6 +2,7 @@
 <html lang="ca">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>~*~ Feliç Aniversari Cristina ~*~</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Jersey+10&display=swap');
@@ -215,7 +216,14 @@
     transform: rotate(var(--rot, -6deg));
     position: relative;
   }
-  .polaroid img, .polaroid .emoji-box {
+  .polaroid img.real-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+    border: 1px solid #cc7a2e;
+  }
+  .polaroid .emoji-box {
     width: 100%;
     aspect-ratio: 1;
     display: flex;
@@ -501,9 +509,63 @@
   }
 
   @media (max-width: 700px) {
+    body { padding: 8px; }
+    .postcard { width: 100%; }
+
+    .titlebar-left span:last-child { font-size: 11px; }
+    .titlebar-left { gap: 4px; }
+    .menubar { font-size: 10px; gap: 8px; padding: 3px 6px; overflow-x: auto; white-space: nowrap; }
+
+    .stamp { top: 56px; right: 8px; width: 44px; height: 54px; font-size: 22px; }
+    .corner-deco { font-size: 20px; }
+
+    .content { padding: 14px 12px 18px; }
+
+    .wordart { font-size: 34px; -webkit-text-stroke: 1.4px #7a1a00; }
+    .wordart-sub { font-size: 19px; }
+    .wordart-2 { font-size: 22px; }
+    .divider { font-size: 14px; letter-spacing: 4px; margin: 4px 0 10px; }
+
+    .main-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .center-col {
+      grid-column: 1 / -1;
+      order: -1;
+      margin-bottom: 4px;
+    }
+    .polaroid { padding: 6px 6px 16px; }
+    .polaroid .cap { font-size: 10px; }
+    .polaroid .emoji-box { font-size: 44px; }
+
+    .message-bubble { font-size: 13px; padding: 12px 14px; }
+    .gift-box { padding: 10px; }
+    .gift-box .gift-title { font-size: 20px; }
+    .gift-box .gift-detail { font-size: 13px; }
+    .date-stamp { font-size: 12px; padding: 5px 10px; }
+
+    .wmp-track { font-size: 10px; }
+
+    .ribbon-frame { font-size: 10px; padding: 6px 4px; }
+    .badge-row { gap: 5px; }
+    .badge { font-size: 8px; padding: 3px 6px; }
+
+    .button-row { gap: 6px; }
+    .fake-btn { font-size: 11px; padding: 5px 10px; }
+
+    .guestbook { font-size: 10px; line-height: 1.6; }
+
+    .postcard::before { font-size: 18px; letter-spacing: 14px; }
+
+    .marquee-track { font-size: 15px; }
+  }
+
+  @media (max-width: 420px) {
     .main-grid { grid-template-columns: 1fr; }
-    .wordart { font-size: 42px; }
-    .wordart-sub { font-size: 22px; }
+    .wordart { font-size: 28px; }
+    .titlebar-left span:last-child { display: none; }
+    .titlebar-left::after { content: "Kimchi Edition™"; font-size: 11px; }
   }
 </style>
 </head>
@@ -529,6 +591,10 @@
     <span>Fitxer</span><span>Edita</span><span>Veure</span><span>Kimchi ▾</span><span>Ajuda</span>
   </div>
 
+  <div class="corner-deco spin" style="top:64px; left:10px;">✿</div>
+  <div class="corner-deco spin" style="top:64px; right:88px; animation-direction:reverse;">❀</div>
+  <div class="stamp">🥇</div>
+
   <div class="marquee-wrap">
     <div class="marquee-track">
       <span>✧･ﾟ: *✧･ﾟ:* FELIÇ ANIVERSARI CRISTINA!! *:･ﾟ✧*:･ﾟ✧ &nbsp; 🌶️🥬 KIMCHI POWER 🥬🌶️ &nbsp; </span><span>✧･ﾟ: *✧･ﾟ:* FELIÇ ANIVERSARI CRISTINA!! *:･ﾟ✧*:･ﾟ✧ &nbsp; 🌶️🥬 KIMCHI POWER 🥬🌶️ &nbsp; </span>
@@ -546,12 +612,16 @@
       <!-- LEFT POLAROIDS -->
       <div style="display:flex; flex-direction:column; gap:14px; padding-top:10px;">
         <div class="polaroid p1">
-          <div class="emoji-box">🥬</div>
-          <div class="cap">col xinesa fresca</div>
+          <img class="real-photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Korean%20cuisine-Kimchi-08.jpg" alt="Kimchi real">
+          <div class="cap">kimchi de veritat 😋</div>
         </div>
         <div class="polaroid p2">
-          <div class="emoji-box">🌶️</div>
-          <div class="cap">gochugaru!!</div>
+          <img class="real-photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Korean%20cuisine-Kimchi-05.jpg" alt="Kimchi vermell picant">
+          <div class="cap">ben picant 🌶️</div>
+        </div>
+        <div class="polaroid" style="--rot:-3deg;">
+          <img class="real-photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Korean%20pancake-Kimchijeon-01.jpg" alt="Kimchi jeon">
+          <div class="cap">kimchi jeon 🥞</div>
         </div>
       </div>
 
@@ -592,12 +662,16 @@
       <!-- RIGHT POLAROIDS -->
       <div style="display:flex; flex-direction:column; gap:14px; padding-top:10px;">
         <div class="polaroid p3">
-          <div class="emoji-box">🫙</div
-          ><div class="cap">pot de fermentar</div>
+          <img class="real-photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Various%20kimchi.jpg" alt="Varietats de kimchi">
+          <div class="cap">varietats de kimchi</div>
         </div>
         <div class="polaroid p4">
-          <div class="emoji-box">🧄</div>
-          <div class="cap">all i gingebre</div>
+          <img class="real-photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Korean%20stew-Kimchi%20jjigae-05.jpg" alt="Kimchi jjigae">
+          <div class="cap">kimchi jjigae 🍲</div>
+        </div>
+        <div class="polaroid" style="--rot:6deg;">
+          <img class="real-photo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kimchi1.jpg" alt="Kimchi a punt">
+          <div class="cap">a punt per tastar 🥢</div>
         </div>
       </div>
 
@@ -605,10 +679,24 @@
 
     <div class="divider">❁ ° ❀ ° ✿ ° ❁ ° ❀ ° ✿ ❁</div>
 
+    <div class="ribbon-frame">☆ ─── PÀGINA OFICIAL D'ANIVERSARI DE LA CRISTINA ─── ☆</div>
+
+    <div class="badge-row">
+      <div class="badge">100% KIMCHI CERTIFIED</div>
+      <div class="badge light">★★★★★ 5/5 PICANT</div>
+      <div class="badge">MEMBRE DEL WEBRING 🔗 KIMCHI-CAT</div>
+      <div class="badge light">HTML 4.01 ✔ VALID</div>
+      <div class="badge">Best viewed in IE6 🖥️</div>
+    </div>
+
     <div class="button-row">
       <div class="fake-btn">💌 Enviar abraçada</div>
       <div class="fake-btn">🎂 Bufar espelmes</div>
       <div class="fake-btn">🥬 Confirmar assistència</div>
+    </div>
+
+    <div class="guestbook">
+      📖 <a href="#">Firma el llibre de visites</a> · 👀 has estat el visitant número <b>128</b> · 🔗 <a href="#">Uneix-te al webring del Kimchi</a>
     </div>
 
     <div style="text-align:center; margin-top:12px; font-size:11px; color:#a35c1a;">

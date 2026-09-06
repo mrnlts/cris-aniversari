@@ -567,6 +567,85 @@
     .titlebar-left span:last-child { display: none; }
     .titlebar-left::after { content: "Kimchi Edition™"; font-size: 11px; }
   }
+
+  /* ===== INTERACTIVE ELEMENTS ===== */
+  .explosion-emoji {
+    position: absolute;
+    font-size: 26px;
+    pointer-events: none;
+    z-index: 40;
+    animation: explodeOut 900ms ease-out forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes explodeOut {
+    0% { transform: translate(-50%,-50%) scale(0.4) rotate(0deg); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.3) rotate(var(--rot)); opacity: 0; }
+  }
+
+  .clickable {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bounce-pop { animation: bouncePop 0.5s ease; }
+  @keyframes bouncePop {
+    0% { transform: perspective(300px) rotateX(6deg) scaleY(1.15) scale(1); }
+    35% { transform: perspective(300px) rotateX(6deg) scaleY(1.15) scale(1.15) rotate(-3deg); }
+    65% { transform: perspective(300px) rotateX(6deg) scaleY(1.15) scale(0.95) rotate(3deg); }
+    100% { transform: perspective(300px) rotateX(6deg) scaleY(1.15) scale(1); }
+  }
+
+  .click-hint {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: bold;
+    color: #ff2b00;
+    background: #fff;
+    border: 1px solid #ff2b00;
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+    animation: blinker 1s step-start infinite;
+    white-space: nowrap;
+  }
+  .hint-under {
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    color: #ff2b00;
+    font-weight: bold;
+    margin-top: 2px;
+    animation: blinker 1s step-start infinite;
+  }
+
+  .wmp.playing .wmp-bars span { animation-duration: 0.3s !important; }
+
+  .kimchi-toast {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    background: linear-gradient(180deg, #fff8ec, #ffdca8);
+    border: 4px ridge #ff5e00;
+    border-radius: 10px;
+    padding: 18px 22px;
+    text-align: center;
+    font-size: 15px;
+    color: #6b1400;
+    font-weight: bold;
+    box-shadow: 0 10px 40px rgba(120,50,0,0.6), 0 0 0 4px #fff;
+    z-index: 50;
+    opacity: 0;
+    animation: toastPop 3.2s ease forwards;
+    max-width: 80%;
+  }
+  @keyframes toastPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+    10% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    18% { transform: translate(-50%, -50%) scale(1); }
+    85% { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
 </style>
 </head>
 <body>
@@ -603,7 +682,8 @@
 
   <div class="content">
 
-    <div class="wordart">Feliç Aniversari</div>
+    <div class="wordart clickable" id="titleClick">Feliç Aniversari</div>
+    <div class="hint-under">🖱️ clica'm!</div>
     <div class="wordart-sub">✿ Cristina ✿</div>
     <div class="divider">❁ ° ❀ ° ✿ ° ❁ ° ❀ ° ✿ ❁</div>
 
@@ -646,16 +726,17 @@
           <div class="date-stamp">📅 Diumenge 18 d'octubre</div>
         </div>
 
-        <div class="wmp">
-          <div class="wmp-screen">
+        <div class="wmp" id="wmpPlayer">
+          <div class="wmp-screen clickable" id="wmpScreen">
             <div class="wmp-bars">
               <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
             </div>
           </div>
-          <div class="wmp-track">▶ ara sonant: "Happy Birthday (Kimchi Remix).mp3"</div>
+          <div class="wmp-track" id="wmpTrack">▶ ara sonant: "Happy Birthday (Kimchi Remix).mp3"</div>
           <div class="wmp-controls">
-            <span>⏮</span><span>▶</span><span>⏸</span><span>⏭</span><span>🔊</span>
+            <span class="clickable" id="wmpPlayBtn">▶</span><span>⏸</span><span>⏭</span><span>🔊</span>
           </div>
+          <div class="hint-under">🎵 clica per sonar!</div>
         </div>
       </div>
 
@@ -692,7 +773,7 @@
     <div class="button-row">
       <div class="fake-btn">💌 Enviar abraçada</div>
       <div class="fake-btn">🎂 Bufar espelmes</div>
-      <div class="fake-btn">🥬 Confirmar assistència</div>
+      <div class="fake-btn clickable" id="confirmBtn">🥬 Confirmar assistència <span class="click-hint">CLICA!</span></div>
     </div>
 
     <div class="guestbook">
@@ -724,6 +805,125 @@
     s.style.animationDuration = (1 + Math.random()*1.5) + 's';
     layer.appendChild(s);
   }
+
+  /* ===== INTERACTIVE ELEMENTS ===== */
+  const postcard = document.querySelector('.postcard');
+
+  function spawnBurst(clientX, clientY, emojiList, count) {
+    const rect = postcard.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    for (let i = 0; i < count; i++) {
+      const span = document.createElement('span');
+      span.className = 'explosion-emoji';
+      span.textContent = emojiList[Math.floor(Math.random() * emojiList.length)];
+      const angle = Math.random() * 2 * Math.PI;
+      const dist = 50 + Math.random() * 130;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist - 30;
+      const rot = (Math.random() * 720 - 360) + 'deg';
+      span.style.left = x + 'px';
+      span.style.top = y + 'px';
+      span.style.setProperty('--tx', tx + 'px');
+      span.style.setProperty('--ty', ty + 'px');
+      span.style.setProperty('--rot', rot);
+      const dur = 700 + Math.random() * 500;
+      span.style.animationDuration = dur + 'ms';
+      postcard.appendChild(span);
+      setTimeout(() => span.remove(), dur + 100);
+    }
+  }
+
+  function playTone(ctx, freq, startTime, duration, type) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'square';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.linearRampToValueAtTime(0.14, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.05);
+  }
+
+  let audioCtx = null;
+  function getCtx() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioCtx;
+  }
+
+  function playRetroJingle() {
+    try {
+      const ctx = getCtx();
+      const now = ctx.currentTime;
+      const notes = [
+        { f: 523.25, t: 0.00, d: 0.14 },
+        { f: 659.25, t: 0.14, d: 0.14 },
+        { f: 783.99, t: 0.28, d: 0.14 },
+        { f: 1046.50, t: 0.42, d: 0.22 },
+        { f: 783.99, t: 0.66, d: 0.14 },
+        { f: 880.00, t: 0.80, d: 0.14 },
+        { f: 1046.50, t: 0.94, d: 0.32 }
+      ];
+      notes.forEach(n => playTone(ctx, n.f, now + n.t, n.d, 'square'));
+    } catch (e) { /* audio not supported */ }
+  }
+
+  function playPop() {
+    try {
+      const ctx = getCtx();
+      const now = ctx.currentTime;
+      playTone(ctx, 220, now, 0.08, 'triangle');
+      playTone(ctx, 440, now + 0.06, 0.1, 'triangle');
+      playTone(ctx, 660, now + 0.12, 0.14, 'triangle');
+    } catch (e) { /* audio not supported */ }
+  }
+
+  const burstEmojis = ['🥬', '🌶️', '🧄', '🫙', '✨', '🎉', '🥳'];
+
+  /* TOP: click the WordArt title -> kimchi explosion + bounce */
+  const titleEl = document.getElementById('titleClick');
+  titleEl.addEventListener('click', function (e) {
+    spawnBurst(e.clientX, e.clientY, burstEmojis, 22);
+    titleEl.classList.remove('bounce-pop');
+    void titleEl.offsetWidth;
+    titleEl.classList.add('bounce-pop');
+  });
+
+  /* MIDDLE: click the WMP screen or play button -> plays retro jingle */
+  const wmpScreen = document.getElementById('wmpScreen');
+  const wmpPlayBtn = document.getElementById('wmpPlayBtn');
+  const wmpPlayer = document.getElementById('wmpPlayer');
+  const wmpTrack = document.getElementById('wmpTrack');
+
+  function triggerJingle() {
+    playRetroJingle();
+    wmpPlayer.classList.add('playing');
+    const originalText = wmpTrack.textContent;
+    wmpTrack.textContent = '🎶 sonant a tot volum! 🎶';
+    setTimeout(() => {
+      wmpPlayer.classList.remove('playing');
+      wmpTrack.textContent = originalText;
+    }, 1500);
+  }
+  wmpScreen.addEventListener('click', triggerJingle);
+  wmpPlayBtn.addEventListener('click', triggerJingle);
+
+  /* BOTTOM: click "Confirmar assistència" -> big explosion + pop sound + toast */
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.addEventListener('click', function (e) {
+    spawnBurst(e.clientX, e.clientY, burstEmojis, 34);
+    playPop();
+
+    const toast = document.createElement('div');
+    toast.className = 'kimchi-toast';
+    toast.innerHTML = '🥳 Confirmat! 🥳<br>T\'esperem diumenge<br>18 d\'octubre al KimchiMama! 🫙';
+    postcard.appendChild(toast);
+    setTimeout(() => toast.remove(), 3300);
+  });
 </script>
 
 </body>
